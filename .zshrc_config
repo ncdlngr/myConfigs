@@ -6,7 +6,7 @@ if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]
 fi
 
 # If you come from bash you might have to change your $PATH.
-export PATH=$HOME/bin:$HOME/.local/bin:/usr/local/bin:$PATH
+#export PATH=$HOME/bin:$HOME/.local/bin:/usr/local/bin:$PATH
 
 # Load NVM (if it's installed)
 export NVM_DIR="$HOME/.nvm"
@@ -34,6 +34,51 @@ mkvenv() {
     
     echo "Virtual environment '$1' created at '$venv_path/$1'"
 }
+
+alias home="cd ~"
+
+# Automatically deactivate Python venv when changing directories
+function auto_deactivate_venv() {
+    if [[ -n "$VIRTUAL_ENV" && ! "$PWD" == "$VIRTUAL_ENV"* ]]; then
+        deactivate
+        echo "Deactivated virtual environment: $VIRTUAL_ENV"
+    fi
+}
+
+# Automatically activate Python venv if .venv exists in the new directory
+function auto_activate_venv() {
+    # Check if .venv directory exists in the current folder
+    if [[ -d "$PWD/.venv" && -f "$PWD/.venv/bin/activate" ]]; then
+        source "$PWD/.venv/bin/activate"
+        echo "Activated virtual environment: $VIRTUAL_ENV"
+    fi
+}
+
+# Add hooks to run auto_activate_venv and auto_deactivate_venv on directory change
+autoload -U add-zsh-hook
+add-zsh-hook chpwd auto_deactivate_venv
+add-zsh-hook chpwd auto_activate_venv
+
+# Run auto_activate_venv on shell startup to activate if already in a venv directory
+auto_activate_venv
+
+
+# Call auto_deactivate_venv every time you change directory
+autoload -U add-zsh-hook
+add-zsh-hook chpwd auto_deactivate_venv
+
+# Enable NVM auto-use for node versions based on .nvmrc files
+autoload -U add-zsh-hook
+load-nvmrc() {
+  if [[ -f .nvmrc && -r .nvmrc ]]; then
+    nvm use
+  elif [[ "$(nvm version)" != "system" ]]; then
+    nvm use default
+  fi
+}
+add-zsh-hook chpwd load-nvmrc
+load-nvmrc
+
 
 
 # Set name of the theme to load --- if set to "random", it will
