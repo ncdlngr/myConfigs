@@ -1,3 +1,5 @@
+
+export AUTOSWITCH_DEFAULT_PYTHON="/usr/bin/python3"
 # Colors
 # Load NVM (if it's installed)
 export NVM_DIR="$HOME/.nvm"
@@ -42,7 +44,6 @@ mkvenv() {
     echo "Virtual environment '$1' created at '$venv_path/$1'"
 }
 
-alias home="cd ~"
 alias workon="source $(pwd)/.venv/bin/activate"
 
 # Set name of the theme to load --- if set to "random", it will
@@ -114,6 +115,8 @@ COMPLETION_WAITING_DOTS="true"
 plugins=(
   zsh-syntax-highlighting
   zsh-autosuggestions
+  fast-syntax-highlighting
+  zsh-autocomplete
   ubuntu
   z
   git
@@ -138,7 +141,7 @@ plugins=(
   vscode
   systemadmin
   )
-
+plugins=(autoswitch_virtualenv $plugins)
 source $ZSH/oh-my-zsh.sh
 
 # User configuration
